@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -70,6 +71,13 @@ public class WebFragment extends Fragment {
 
         // Carga la web de Distancia en el WebView
         webView.loadUrl(ruta);
+
+        Button botonVolver = vista.findViewById(R.id.btnVolver);
+        botonVolver.setOnClickListener(v -> {
+
+            requireActivity().getSupportFragmentManager().popBackStack();
+
+        });
 
         return vista;
     }

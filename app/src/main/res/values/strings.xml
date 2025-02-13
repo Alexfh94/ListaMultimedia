@@ -2,9 +2,8 @@
     <string name="app_name">ListaMultimedia</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="txt_dados">Un grupo de amigos se reúne alrededor de una mesa, lanzando los dados con emoción. Las risas y la expectativa llenan el ambiente mientras esperan el resultado de cada tirada.</string>
-    <string name="txt_perro">Un adorable perro observa fijamente algo fuera de cámara con curiosidad. Sus orejas se mueven levemente mientras inclina la cabeza, tratando de entender lo que sucede.</string>
-    <string name="txt_babosa">Una babosa se desliza lentamente sobre una hoja húmeda, dejando un rastro brillante a su paso. La textura de su piel y la forma en que se mueve crean una escena hipnotizante.</string>
-    <string name="txt_plato">Un plato humeante recién salido de la cocina. Los colores vibrantes de los ingredientes y el delicioso aroma parecen traspasar la pantalla, invitando a degustarlo.</string>
-    <string name="txt_paisaje">Un paisaje impresionante se extiende hasta el horizonte. Las montañas, el cielo teñido de colores cálidos y el sonido del viento crean una sensación de paz y libertad.</string>
+    <string name="txt_dados">Tirada de dadas con su correspondiente movimiento en el tablero.</string>
+    <string name="txt_dublin">Vista aérea en blanco y negro de la ciudad de Dublin.</string>
+
+
 </resources>
