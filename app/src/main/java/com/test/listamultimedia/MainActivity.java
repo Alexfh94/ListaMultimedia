@@ -1,4 +1,5 @@
 package com.test.listamultimedia;
+
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,14 +38,15 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        multimedia = cargarDatos();
-        cargarRecyclerView(multimedia);
+        multimedia = cargarDatos(); // Cargar datos de la lista multimedia
+        cargarRecyclerView(multimedia); // Cargar el RecyclerView con los datos
     }
 
     // Método que carga el recyclerView con el adaptador del catálogo
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
                 .commit();
     }
 
+    // Método que carga los datos multimedia (videos, audios y webs)
     public ArrayList<Multimedia> cargarDatos() {
         return new ArrayList<>(Arrays.asList(
                 new Multimedia("Video dados", getString(R.string.txt_dados), "android.resource://" + getPackageName() + "/" + R.raw.dados, R.drawable.ic_video_foreground, Multimedia.VIDEO),
@@ -70,21 +73,17 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
         ));
     }
 
+    // Método que maneja el clic en los elementos de la lista multimedia
     @Override
     public void onItemClick(View view, int position) {
         Multimedia item = multimedia.get(position);
 
-
-
-
-
-
+        // Si el item es un video
         if (item.getTipo() == Multimedia.VIDEO) {
 
+            // Si es diferente al audio previamente seleccionado, detenerlo
             if (position != currentAudioItem) {
-                // Si hay un item de audio previo, ejecutar la acción del botón "volver"
                 if (previousAudioItemView != null) {
-                    // Ejecutar el "volver" del item anterior
                     Button returnButton = previousAudioItemView.findViewById(R.id.volverButton);
                     if (returnButton != null) {
                         returnButton.performClick(); // Simular el clic del botón "volver"
@@ -93,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
             }
             currentAudioItem = position;
 
-
+            // Crear el fragmento del video y pasarle los datos
             Bundle bundle = new Bundle();
             bundle.putSerializable("item", item);
 
@@ -103,14 +102,14 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
 
-            contador = 0;
-        } else if (item.getTipo() == Multimedia.AUDIO) {
+            contador = 0; // Reiniciar el contador
+        }
+        // Si el item es un audio
+        else if (item.getTipo() == Multimedia.AUDIO) {
 
-            // Si es un item de audio y es diferente al actual
             if (position != currentAudioItem) {
-                // Si hay un item de audio previo, ejecutar la acción del botón "volver"
+                // Detener cualquier audio previo
                 if (previousAudioItemView != null) {
-                    // Ejecutar el "volver" del item anterior
                     Button returnButton = previousAudioItemView.findViewById(R.id.volverButton);
                     if (returnButton != null) {
                         returnButton.performClick(); // Simular el clic del botón "volver"
@@ -120,14 +119,14 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
                 // Cambiar al nuevo item
                 currentAudioItem = position;
 
-                // Detener cualquier reproducción en curso antes de procesar el nuevo clic
+                // Detener cualquier reproducción en curso
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                     mediaPlayer.stop();
                     mediaPlayer.release();
                     mediaPlayer = null;
                 }
 
-                // Inicializamos el nuevo audio
+                // Inicializar y configurar el nuevo audio
                 MediaPlayer mp = MediaPlayer.create(this, Integer.parseInt(item.getDireccion()));
                 videoView = new VideoView(this);
                 videoView.setLayoutParams(new LinearLayout.LayoutParams(
@@ -137,15 +136,15 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
                 view.findViewById(R.id.tvDescripcion).setVisibility(View.VISIBLE);
 
                 CardView cardView = view.findViewById(R.id.cardView2);
-                VideoView videoView = view.findViewById(R.id.videoView);
+                videoView = view.findViewById(R.id.videoView);
                 cardView.setVisibility(View.VISIBLE);
                 videoView.setVisibility(View.VISIBLE);
 
-                // Cargar video desde raw
-                String videoPath = "android.resource://" + getPackageName() + "/raw/waveline"; // Video desde raw
+                // Cargar el video desde raw
+                String videoPath = "android.resource://" + getPackageName() + "/raw/waveline";
                 videoView.setVideoURI(Uri.parse(videoPath));
 
-                // Mostrar botones de control
+                // Mostrar los botones de control (play, pause, stop, volver)
                 LinearLayout contenedorBotones = view.findViewById(R.id.contenedorBotones);
                 contenedorBotones.setVisibility(View.VISIBLE);
                 Button playButton = view.findViewById(R.id.playButton);
@@ -158,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
                 stopButton.setVisibility(View.VISIBLE);
                 returnButton.setVisibility(View.VISIBLE);
 
-                // Play button
+                // Configurar el botón "play"
                 playButton.setOnClickListener(v -> {
                     if ((mediaPlayer == null || !mediaPlayer.isPlaying()) && (mp != null && !mp.isPlaying())) {
                         mediaPlayer = mp; // Usamos el mismo MediaPlayer para audio y video
@@ -167,13 +166,38 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
                     }
                 });
 
-                // Pause button
+                // Configurar el botón "pause"
+                pauseButton.setOnClickListener(v -> {
+                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        videoView.pause();
+                    }
+                    if (mp != null && mp.isPlaying()) {
+                        mp.pause();
+                        videoView.pause();
+                    }
+                });
+
+                // Configurar el botón "stop"
+                stopButton.setOnClickListener(v -> {
+                    // Detener la reproducción si está en curso
+                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                        mediaPlayer.stop();
+                        videoView.stopPlayback();
+                    }
+                    if (mp != null && mp.isPlaying()) {
+                        mp.stop();
+                    }
+                });
+
+                // Configurar el botón "volver"
                 returnButton.setOnClickListener(v -> {
                     mediaPlayer.stop();
                     videoView.stopPlayback();
                     mp.stop();
                     contador = 0;
 
+                    // Ocultar botones y video
                     contenedorBotones.setVisibility(View.GONE);
                     playButton.setVisibility(View.GONE);
                     pauseButton.setVisibility(View.GONE);
@@ -186,49 +210,23 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
                     view.findViewById(R.id.tvDescripcion).setVisibility(View.GONE);
                 });
 
-                // Hacemos que el video se reproduzca en bucle hasta que acabe el audio.
+                // Hacer que el video se reproduzca en bucle hasta que acabe el audio
                 videoView.setOnCompletionListener(mp1 -> videoView.start());
                 mp.setOnCompletionListener(mp1 -> {
                     videoView.stopPlayback();
-                });
-
-                // Pause button
-                pauseButton.setOnClickListener(v -> {
-                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                        mediaPlayer.pause();
-                        videoView.pause();
-                    }
-                    if (mp != null && mp.isPlaying()) {
-                        mp.pause();
-                        videoView.pause();
-                    }
-                });
-
-                // Stop button
-                stopButton.setOnClickListener(v -> {
-                    // Verifica si el mediaPlayer y el mp están en reproducción antes de intentar detenerlos
-                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                        mediaPlayer.stop();
-                        videoView.stopPlayback();
-                    }
-                    if (mp != null && mp.isPlaying()) {
-                        mp.stop();
-                    }
                 });
 
                 // Guardar la vista del item actual para poder manejar la acción "volver"
                 previousAudioItemView = view;
             }
 
-
-
-
-        } else if (item.getTipo() == Multimedia.WEB) {
+        }
+        // Si el item es una web
+        else if (item.getTipo() == Multimedia.WEB) {
 
             if (position != currentAudioItem) {
-                // Si hay un item de audio previo, ejecutar la acción del botón "volver"
+                // Detener cualquier audio previo
                 if (previousAudioItemView != null) {
-                    // Ejecutar el "volver" del item anterior
                     Button returnButton = previousAudioItemView.findViewById(R.id.volverButton);
                     if (returnButton != null) {
                         returnButton.performClick(); // Simular el clic del botón "volver"
@@ -238,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
 
             currentAudioItem = position;
 
+            // Crear el fragmento de la web y pasarle la URL
             Bundle bundle = new Bundle();
             bundle.putString("ruta", item.getDireccion());
 
@@ -245,13 +244,7 @@ public class MainActivity extends AppCompatActivity implements MultimediaAdapter
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.replace(R.id.contenedor, WebFragment.class, bundle).commit();
-            contador = 0;
+            contador = 0; // Reiniciar contador
         }
-
-
-
-
-
-
     }
 }
